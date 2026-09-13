@@ -13,10 +13,14 @@ services:
       - ./server/data:/app/data
     restart: unless-stopped
     networks:
-      - default
-      - web
+      default:
+      web:
+        # 供统一网关（gateway 仓库）按此别名转发 /chat-api
+        aliases:
+          - chat-api
 
-  # ---- 前端 Nginx（托管 /chat/ 静态文件） ----
+  # ---- 前端 Nginx（托管静态文件，由统一网关转发 /chat/） ----
+  # 本项目不发布任何宿主机端口，80 由 gateway 仓库独占
   chat-frontend:
     build:
       context: .
@@ -27,21 +31,11 @@ services:
       - chat-backend
     restart: unless-stopped
     networks:
-      - default
-      - web
-
-  # ---- 统一网关（独占 80，按路径分发到各项目） ----
-  gateway:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - chat-frontend
-    restart: unless-stopped
-    networks:
-      - web
+      default:
+      web:
+        # 供统一网关（gateway 仓库）按此别名转发 /chat/
+        aliases:
+          - chat-web
 
 networks:
   # 与 xianji 等项目共享的外部网络，需先 docker network create web

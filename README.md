@@ -74,60 +74,56 @@ chat/
 │   ├── server.ts           # API + SSE 流式代理
 │   ├── db.ts               # SQLite 建表与读写
 │   └── data/               # SQLite 文件（不入库）
-├── gateway/nginx.conf      # 统一网关：独占 80，按路径分发
 ├── nginx.conf              # chat 前端自己的 nginx
-├── docker-compose.yml      # gateway + chat-frontend + chat-backend
+├── docker-compose.yml      # chat-frontend + chat-backend
 └── Dockerfile              # 前端多阶段构建
 ```
 
 ## 部署
 
-多个项目共用 80 端口，靠路径区分，由一个独立的网关容器统一转发：
+本项目**不发布任何宿主机端口**。所有项目共用 80 端口、靠路径区分，由独立的
+`gateway` 仓库（服务器上 `/app/gateway`）统一转发：
 
 ```
 :80 gateway
- ├─ /guitar/       → xianji-web:80
- ├─ /guitar-api/   → xianji-api:5000
- ├─ /guitar-images/→ xianji-api:5000
- ├─ /chat/         → chat-frontend:80
- └─ /chat-api/     → chat-backend:5001
+ ├─ /            → 302 /guitar/
+ ├─ /guitar/     → xianji-web:80
+ ├─ /guitar-api/ → xianji-api:5000
+ ├─ /chat/       → chat-web:80
+ └─ /chat-api/   → chat-api:5001
 ```
 
-各容器通过 Docker 外部网络 `web` 互联。
+各容器通过 Docker 外部网络 `web` 互联；本项目用 `chat-web` / `chat-api` 两个别名
+把自己暴露给网关（见 `docker-compose.yml`）。
+
+网关为什么独立成仓库、以及怎么新增项目，见 `gateway` 仓库的 README。
 
 ### 首次上线
-
-xianji 原本自己占用 80 端口，需要先让位给网关。
 
 ```bash
 # 1. 创建共享网络
 docker network create web
 
-# 2. 更新 xianji（其 docker-compose.yml 已改为 expose 80 + 接入 web 网络）
-cd /app/xianji
-git pull
-docker compose up -d --build
+# 2. 部署 gateway（独占 80）
+cd /app/gateway
+docker compose up -d
 
-# 3. 部署 chat（会启动网关并占用 80）
+# 3. 部署 chat
 cd /app/chat
-echo "DEEPSEEK_KEY=sk-xxx" > .env
+printf 'DEEPSEEK_KEY=sk-xxx\nCHAT_PASSWORD=换成你的强密码\n' > .env
 docker compose up -d --build
 ```
-
-第 2 步和第 3 步之间 80 端口是空的，xianji 会短暂无法访问，属正常现象。
 
 验证：`http://IP/chat/` 和 `http://IP/guitar/` 都能打开。
 
 ### 自动部署
 
 push 到 `main` 后 GitHub Actions 自动同步到 `/app/chat` 并重建容器。
-需要在仓库里配置与 xianji 相同的 secrets：`SERVER_SSH_KEY`、`SERVER_HOST`、`SERVER_USER`。
+需要在仓库里配置与 xianji、gateway 相同的 secrets：`SERVER_SSH_KEY`、`SERVER_HOST`、`SERVER_USER`。
 
 > 部署脚本会 `rsync --delete`，但已排除 `.env` 与 `server/data`，服务器上的密钥和数据库不会被清掉。
 
-### 新增项目
-
-在 `gateway/nginx.conf` 里加一段 `location`，并让新项目的容器接入 `web` 网络即可。
+改本项目的路由（路径前缀或端口）时，除了这里，还要同步改 `gateway` 仓库的 `nginx.conf`。
 
 ## 备份
 

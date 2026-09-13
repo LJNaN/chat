@@ -43,5 +43,7 @@ jobs:
           script: |
             cd /app/chat
             docker network create web 2>/dev/null || true
-            docker compose up --build -d
+            # --remove-orphans 用于清理早期版本遗留的 chat-gateway-1 容器
+            # （网关已迁到独立的 gateway 仓库，不再属于本项目）
+            docker compose up --build -d --remove-orphans
             docker image prune -f
