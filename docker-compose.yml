@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - DEEPSEEK_KEY=${DEEPSEEK_KEY}
-      - CHAT_PASSWORD=${CHAT_PASSWORD:-2222}
+      - CHAT_PASSWORD=${CHAT_PASSWORD:-change-me}
     ports:
       - "127.0.0.1:5001:5001"
     volumes:

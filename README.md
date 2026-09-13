@@ -20,7 +20,7 @@
 ```bash
 git clone <本仓库地址> chat
 cd chat
-echo "DEEPSEEK_KEY=sk-your-key-here" > .env    # 可选，自带默认密码 2222
+printf 'DEEPSEEK_KEY=sk-your-key-here\nCHAT_PASSWORD=换成一个强密码\n' > .env
 docker compose up -d
 ```
 
@@ -43,7 +43,7 @@ npm install
 npm run dev              # 监听 5175
 ```
 
-打开 `http://localhost:5175/chat/`，默认密码 `2222`。
+打开 `http://localhost:5175/chat/`，输入你在 `.env` 里设置的 `CHAT_PASSWORD`。
 
 ## 配置
 
@@ -52,7 +52,7 @@ npm run dev              # 监听 5175
 | 变量 | 默认值 | 说明 |
 |---|---|---|
 | `DEEPSEEK_KEY` | — | DeepSeek API Key，必填 |
-| `CHAT_PASSWORD` | `2222` | `/chat` 的访问密码 |
+| `CHAT_PASSWORD` | `change-me` | `/chat` 的访问密码，**部署到公网前必须改掉** |
 
 改密码只需改 `.env` 并重启后端，无需重新打包前端。
 

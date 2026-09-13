@@ -7,7 +7,7 @@ const envPath = path.join(__dirname, '..', '.env');
 if (!fs.existsSync(envPath) && !process.env.DEEPSEEK_KEY) {
   fs.writeFileSync(
     envPath,
-    '# DeepSeek API Key（前往 https://platform.deepseek.com/ 获取）\nDEEPSEEK_KEY=sk-your-key-here\n\n# 访问 /chat 的密码\nCHAT_PASSWORD=2222\n',
+    '# DeepSeek API Key（前往 https://platform.deepseek.com/ 获取）\nDEEPSEEK_KEY=sk-your-key-here\n\n# 访问 /chat 的密码（公网部署前务必改掉）\nCHAT_PASSWORD=change-me\n',
     'utf-8'
   );
   console.log('[startup] .env 不存在，已创建模板');
@@ -26,7 +26,7 @@ const app = express();
 const PORT = Number(process.env.PORT) || 5001;
 const API_PREFIX = '/chat-api';
 const DEEPSEEK_KEY = process.env.DEEPSEEK_KEY || '';
-const CHAT_PASSWORD = process.env.CHAT_PASSWORD || '2222';
+const CHAT_PASSWORD = process.env.CHAT_PASSWORD || 'change-me';
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
 const MODEL = 'deepseek-flash';
 const TOKEN_TTL_DAYS = 30;
