@@ -1,0 +1,49 @@
+services:
+  # ---- Node.js API 后端（不直接对外，只走网关） ----
+  chat-backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - DEEPSEEK_KEY=${DEEPSEEK_KEY}
+      - CHAT_PASSWORD=${CHAT_PASSWORD:-2222}
+    ports:
+      - "127.0.0.1:5001:5001"
+    volumes:
+      - ./server/data:/app/data
+    restart: unless-stopped
+    networks:
+      - default
+      - web
+
+  # ---- 前端 Nginx（托管 /chat/ 静态文件） ----
+  chat-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - "80"
+    depends_on:
+      - chat-backend
+    restart: unless-stopped
+    networks:
+      - default
+      - web
+
+  # ---- 统一网关（独占 80，按路径分发到各项目） ----
+  gateway:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - chat-frontend
+    restart: unless-stopped
+    networks:
+      - web
+
+networks:
+  # 与 xianji 等项目共享的外部网络，需先 docker network create web
+  web:
+    external: true

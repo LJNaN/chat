@@ -1,0 +1,98 @@
+.sidebar {
+  width: 264px;
+  flex: 0 0 264px;
+  height: 100%;
+  background: #fbfbfc;
+  border-right: 1px solid #e8eaed;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 12px 10px;
+  gap: 12px;
+}
+
+.sidebar-head {
+  padding: 2px 4px 0;
+}
+
+.sidebar-brand {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+
+.sidebar-empty {
+  color: #a8b0ba;
+  font-size: 13px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #3c444d;
+  transition: background 0.15s;
+}
+
+.sidebar-item:hover {
+  background: #eef1f5;
+}
+
+.sidebar-item.active {
+  background: #e4edfb;
+  color: #1668dc;
+  font-weight: 500;
+}
+
+.sidebar-item-icon {
+  font-size: 13px;
+  opacity: 0.7;
+  flex: 0 0 auto;
+}
+
+.sidebar-item-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-item-actions {
+  display: none;
+  gap: 8px;
+  color: #8b95a1;
+  font-size: 13px;
+}
+
+.sidebar-item:hover .sidebar-item-actions {
+  display: flex;
+}
+
+.sidebar-item-actions .anticon:hover {
+  color: #1668dc;
+}
+
+.sidebar-foot {
+  border-top: 1px solid #e8eaed;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-foot .ant-btn {
+  text-align: left;
+  justify-content: flex-start;
+}

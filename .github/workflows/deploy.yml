@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build check
+        run: npm ci && npm run build
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Ensure target directory exists
+        run: ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "mkdir -p /app/chat"
+
+      - name: Sync files via rsync
+        run: |
+          # 必须排除 .env 和 server/data，否则 --delete 会把服务器上的密钥和数据库删掉
+          rsync -avz --delete --exclude='.git' --exclude='node_modules' \
+            --exclude='server/node_modules' --exclude='server/data' \
+            --exclude='dist' --exclude='.env' \
+            -e 'ssh -o ServerAliveInterval=30' \
+            ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/app/chat/
+
+      - name: Docker compose deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /app/chat
+            docker network create web 2>/dev/null || true
+            docker compose up --build -d
+            docker image prune -f

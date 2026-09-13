@@ -1,0 +1,25 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* antd 的 <App> 会插入一层 div.ant-app，必须补上高度，
+   否则 .app-shell 的 height:100% 会断链，退化成内容高度 */
+.ant-app {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif;
+  background: #f5f6f8;
+  color: #1f2328;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
