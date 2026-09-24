@@ -39,14 +39,14 @@
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  background: #e4edfb;
-  color: #1668dc;
+  background: var(--c-primary-soft);
+  color: var(--c-primary-text);
   margin-top: 2px;
 }
 
 .msg-row.user .msg-avatar {
-  background: #1668dc;
-  color: #fff;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
 }
 
 .msg-bubble {
@@ -54,17 +54,17 @@
   min-width: 0;
   padding: 11px 15px;
   border-radius: 12px;
-  background: #fff;
-  border: 1px solid #e8eaed;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
   font-size: 15px;
   line-height: 1.7;
   word-break: break-word;
 }
 
 .msg-row.user .msg-bubble {
-  background: #1668dc;
-  border-color: #1668dc;
-  color: #fff;
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: var(--c-on-primary);
   white-space: pre-wrap;
 }
 
@@ -101,38 +101,43 @@
 }
 
 .markdown code {
-  background: #f2f4f7;
+  background: var(--c-fill);
   padding: 2px 5px;
   border-radius: 4px;
   font-family: ui-monospace, Consolas, monospace;
   font-size: 13px;
 }
 
+/* 宽表格在窄屏上横向滚动，避免撑破气泡把整页拖宽 */
+.table-wrap {
+  margin: 0 0 10px;
+  overflow-x: auto;
+}
+
 .markdown table {
   border-collapse: collapse;
-  margin: 0 0 10px;
   font-size: 14px;
 }
 
 .markdown th,
 .markdown td {
-  border: 1px solid #e2e5e9;
+  border: 1px solid var(--c-border-strong);
   padding: 6px 10px;
 }
 
 .markdown th {
-  background: #f7f8fa;
+  background: var(--c-surface-3);
 }
 
 .markdown blockquote {
   margin: 0 0 10px;
   padding: 2px 12px;
-  border-left: 3px solid #d5dbe3;
-  color: #6b7480;
+  border-left: 3px solid var(--c-border-quote);
+  color: var(--c-text-3);
 }
 
 .markdown a {
-  color: #1668dc;
+  color: var(--c-primary-text);
 }
 
 /* ---- 代码块 ---- */
@@ -143,8 +148,8 @@
 }
 
 .code-wrap pre {
-  background: #f7f8fa;
-  border: 1px solid #e8eaed;
+  background: var(--c-code-bg);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   padding: 12px 14px;
   margin: 0;
@@ -165,9 +170,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  border: 1px solid #e2e5e9;
-  background: #fff;
-  color: #6b7480;
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-text-3);
   border-radius: 6px;
   padding: 2px 8px;
   font-size: 12px;
@@ -176,13 +181,14 @@
   transition: opacity 0.15s, color 0.15s;
 }
 
-.code-wrap:hover .code-copy {
+.code-wrap:hover .code-copy,
+.code-wrap:focus-within .code-copy {
   opacity: 1;
 }
 
 .code-copy:hover {
-  color: #1668dc;
-  border-color: #1668dc;
+  color: var(--c-primary-text);
+  border-color: var(--c-primary-text);
 }
 
 /* ---- 流式光标 ---- */
@@ -193,12 +199,40 @@
   height: 15px;
   margin-left: 2px;
   vertical-align: -2px;
-  background: #1668dc;
+  background: var(--c-primary);
   animation: blink 1s step-start infinite;
 }
 
 @keyframes blink {
   50% {
     opacity: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .msg-scroll {
+    padding: 16px 0;
+  }
+
+  .msg-inner {
+    padding: 0 12px;
+    gap: 16px;
+  }
+}
+
+/* 触屏没有 hover，复制按钮得常驻，否则永远点不到 */
+@media (hover: none) {
+  .code-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 绝对定位常驻会盖住代码首行，改成在代码块上方单独占一行 */
+  .code-copy {
+    position: static;
+    align-self: flex-end;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+    opacity: 1;
   }
 }

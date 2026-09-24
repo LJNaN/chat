@@ -1,3 +1,75 @@
+/* 主题变量：:root 是浅色基准，:root[data-theme='dark'] 覆盖。
+   自定义样式一律引用这里的变量；antd 组件的配色由 main.tsx 里的 algorithm 负责，
+   两套体系互不派生，只靠 --c-primary / --c-surface / --c-bg 三处约定对齐。 */
+:root {
+  color-scheme: light;
+
+  --c-bg: #f5f6f8;
+  --c-surface: #ffffff;
+  --c-surface-2: #fbfbfc;
+  --c-surface-3: #f7f8fa;
+  --c-fill: #f2f4f7;
+  --c-fill-hover: #eef1f5;
+  --c-code-bg: #f7f8fa;
+
+  /* 必须与 main.tsx 里 token.colorPrimary 一致 */
+  --c-primary: #1668dc;
+  /* 深色下 #1668dc 做文字对比度不够，用它的亮色变体 */
+  --c-primary-text: #1668dc;
+  --c-primary-soft: #e4edfb;
+  --c-primary-ring: rgba(22, 104, 220, 0.1);
+  --c-on-primary: #ffffff;
+  --c-danger: #d4380d;
+
+  --c-text: #1f2328;
+  --c-text-2: #3c444d;
+  --c-text-3: #6b7480;
+  --c-text-4: #8b95a1;
+  --c-text-5: #a8b0ba;
+
+  --c-border: #e8eaed;
+  --c-border-strong: #e2e5e9;
+  --c-border-quote: #d5dbe3;
+  /* 浅色下卡片靠阴影分层，不需要描边；深色下阴影看不见，靠它补边界 */
+  --c-border-subtle: transparent;
+
+  --c-shadow-card: 0 12px 40px -12px rgba(15, 35, 75, 0.18);
+  --c-login-bg: linear-gradient(160deg, #eef2f9 0%, #f7f8fa 60%, #eef4f5 100%);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --c-bg: #17181a;
+  --c-surface: #1f2023;
+  --c-surface-2: #1a1b1e;
+  --c-surface-3: #26272b;
+  --c-fill: #2b2c31;
+  --c-fill-hover: #26272b;
+  --c-code-bg: #26272b;
+
+  --c-primary: #1668dc;
+  --c-primary-text: #6ea8fe;
+  --c-primary-soft: #1e2b44;
+  --c-primary-ring: rgba(110, 168, 254, 0.28);
+  --c-on-primary: #ffffff;
+  --c-danger: #ff7875;
+
+  --c-text: #e6e8eb;
+  --c-text-2: #c4c9cf;
+  --c-text-3: #a0a6ae;
+  --c-text-4: #8d939c;
+  --c-text-5: #838991;
+
+  --c-border: #2f3034;
+  --c-border-strong: #3a3b40;
+  --c-border-quote: #474950;
+  --c-border-subtle: #2f3034;
+
+  --c-shadow-card: 0 12px 40px -12px rgba(0, 0, 0, 0.6);
+  --c-login-bg: linear-gradient(160deg, #1c1f26 0%, #17181a 60%, #1a1e24 100%);
+}
+
 html,
 body,
 #root {
@@ -5,6 +77,15 @@ body,
   padding: 0;
   width: 100%;
   height: 100%;
+}
+
+/* 移动端地址栏收起会改变 100vh 的高度，svh 取最小值，布局不会跟着跳 */
+@supports (height: 100svh) {
+  html,
+  body,
+  #root {
+    height: 100svh;
+  }
 }
 
 /* antd 的 <App> 会插入一层 div.ant-app，必须补上高度，
@@ -15,11 +96,19 @@ body,
 
 body {
   font-family: system-ui, 'Segoe UI', 'Microsoft YaHei', Roboto, sans-serif;
-  background: #f5f6f8;
-  color: #1f2328;
+  background: var(--c-bg);
+  color: var(--c-text);
   -webkit-font-smoothing: antialiased;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* iOS 聚焦到字号小于 16px 的输入框时会强制把整个页面放大 */
+@media (max-width: 720px) {
+  .ant-input,
+  .ant-input-affix-wrapper input {
+    font-size: 16px;
+  }
 }

@@ -41,7 +41,16 @@ function CodeBlock({ children }: { children?: React.ReactNode }) {
   );
 }
 
-const markdownComponents = { pre: CodeBlock };
+/** 宽表格在窄屏上会撑破气泡，套一层横向滚动容器 */
+function TableBlock({ children, ...rest }: React.ComponentPropsWithoutRef<'table'>) {
+  return (
+    <div className="table-wrap">
+      <table {...rest}>{children}</table>
+    </div>
+  );
+}
+
+const markdownComponents = { pre: CodeBlock, table: TableBlock };
 
 interface Props {
   items: RenderItem[];

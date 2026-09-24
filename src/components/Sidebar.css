@@ -2,8 +2,8 @@
   width: 264px;
   flex: 0 0 264px;
   height: 100%;
-  background: #fbfbfc;
-  border-right: 1px solid #e8eaed;
+  background: var(--c-surface-2);
+  border-right: 1px solid var(--c-border);
   display: flex;
   flex-direction: column;
   padding: 14px 12px 10px;
@@ -17,7 +17,7 @@
 .sidebar-brand {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2328;
+  color: var(--c-text);
 }
 
 .sidebar-list {
@@ -28,7 +28,7 @@
 }
 
 .sidebar-empty {
-  color: #a8b0ba;
+  color: var(--c-text-5);
   font-size: 13px;
   text-align: center;
   padding: 24px 0;
@@ -42,17 +42,22 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  color: #3c444d;
+  color: var(--c-text-2);
   transition: background 0.15s;
 }
 
 .sidebar-item:hover {
-  background: #eef1f5;
+  background: var(--c-fill-hover);
+}
+
+/* 触屏没有 hover，用按下态给个反馈 */
+.sidebar-item:active {
+  background: var(--c-fill-hover);
 }
 
 .sidebar-item.active {
-  background: #e4edfb;
-  color: #1668dc;
+  background: var(--c-primary-soft);
+  color: var(--c-primary-text);
   font-weight: 500;
 }
 
@@ -72,7 +77,7 @@
 .sidebar-item-actions {
   display: none;
   gap: 8px;
-  color: #8b95a1;
+  color: var(--c-text-4);
   font-size: 13px;
 }
 
@@ -81,11 +86,11 @@
 }
 
 .sidebar-item-actions .anticon:hover {
-  color: #1668dc;
+  color: var(--c-primary-text);
 }
 
 .sidebar-foot {
-  border-top: 1px solid #e8eaed;
+  border-top: 1px solid var(--c-border);
   padding-top: 8px;
   display: flex;
   flex-direction: column;
@@ -95,4 +100,20 @@
 .sidebar-foot .ant-btn {
   text-align: left;
   justify-content: flex-start;
+}
+
+/* 触屏设备上 hover 永远不会触发，重命名/删除必须常驻，同时放大点击区域 */
+@media (hover: none) {
+  .sidebar-item {
+    padding: 11px 10px;
+  }
+
+  .sidebar-item-actions {
+    display: flex;
+  }
+
+  .sidebar-item-actions .anticon {
+    font-size: 15px;
+    padding: 8px;
+  }
 }

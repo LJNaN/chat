@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Spin, App as AntApp } from 'antd';
+import { Spin, Drawer, App as AntApp } from 'antd';
 import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
 import SettingsModal from './components/SettingsModal';
 import LoginGate from './components/LoginGate';
+import useMediaQuery from './useMediaQuery';
 import type { RenderItem } from './components/MessageList';
 import type { Conversation, Message } from './types';
 import {
@@ -34,6 +35,10 @@ export default function App() {
   const [streamText, setStreamText] = useState<string | null>(null);
   const [streaming, setStreaming] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // 断点与 App.css / ChatView.css 的媒体查询保持一致
+  const isMobile = useMediaQuery('(max-width: 720px)');
 
   const abortRef = useRef<(() => void) | null>(null);
   const currentIdRef = useRef<string | null>(null);
@@ -53,6 +58,7 @@ export default function App() {
     setPendingUser(null);
     setStreamText(null);
     setStreaming(false);
+    setDrawerOpen(false);
   }, []);
 
   useEffect(() => {
@@ -162,32 +168,36 @@ export default function App() {
     abortRef.current?.();
   }, []);
 
+  // 返回是否真的切换成功，移动端据此决定要不要收起抽屉
   const handleSelect = useCallback(
-    (id: string) => {
+    (id: string): boolean => {
       if (streaming) {
         message.warning('请先等待当前回复结束或点击停止');
-        return;
+        return false;
       }
-      if (id === currentIdRef.current) return;
+      if (id === currentIdRef.current) return true;
       // 先清空，避免加载新会话历史期间闪现上一个会话的内容
       setMessages([]);
       setCurrentId(id);
+      return true;
     },
     [streaming, message]
   );
 
-  const handleCreate = useCallback(async () => {
+  const handleCreate = useCallback(async (): Promise<boolean> => {
     if (streaming) {
       message.warning('请先等待当前回复结束或点击停止');
-      return;
+      return false;
     }
     try {
       const conv = await createConversation();
       setConversations((prev) => [conv, ...prev]);
       setCurrentId(conv.id);
       setMessages([]);
+      return true;
     } catch (e) {
       message.error((e as Error).message);
+      return false;
     }
   }, [streaming, message]);
 
@@ -261,18 +271,43 @@ export default function App() {
 
   const currentTitle = conversations.find((c) => c.id === currentId)?.title ?? '新对话';
 
+  // 只构造一份侧边栏，按断点决定挂进普通布局还是抽屉，避免两处维护
+  const sidebar = (
+    <Sidebar
+      conversations={conversations}
+      currentId={currentId}
+      onSelect={(id) => {
+        if (handleSelect(id)) setDrawerOpen(false);
+      }}
+      onCreate={async () => {
+        if (await handleCreate()) setDrawerOpen(false);
+      }}
+      onRename={handleRename}
+      onDelete={handleDelete}
+      onOpenSettings={() => {
+        setDrawerOpen(false);
+        setSettingsOpen(true);
+      }}
+      onLogout={handleLogout}
+    />
+  );
+
   return (
     <div className="app-shell">
-      <Sidebar
-        conversations={conversations}
-        currentId={currentId}
-        onSelect={handleSelect}
-        onCreate={handleCreate}
-        onRename={handleRename}
-        onDelete={handleDelete}
-        onOpenSettings={() => setSettingsOpen(true)}
-        onLogout={handleLogout}
-      />
+      {isMobile ? (
+        <Drawer
+          placement="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          width={264}
+          closable={false}
+          styles={{ body: { padding: 0 } }}
+        >
+          {sidebar}
+        </Drawer>
+      ) : (
+        sidebar
+      )}
       <ChatView
         title={currentTitle}
         items={items}
@@ -280,6 +315,7 @@ export default function App() {
         streaming={streaming}
         onSend={handleSend}
         onStop={handleStop}
+        onOpenSidebar={isMobile ? () => setDrawerOpen(true) : undefined}
       />
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>

@@ -13,19 +13,11 @@
   justify-content: center;
 }
 
-/* 窄屏：侧边栏收窄，避免挤压对话区 */
-@media (max-width: 720px) {
-  .sidebar {
-    width: 190px;
-    flex-basis: 190px;
-    padding: 10px 8px 8px;
-  }
-
-  .msg-inner {
-    padding: 0 14px;
-  }
-
-  .chat-input-wrap {
-    padding: 10px 12px 12px;
-  }
+/* 移动端侧边栏移入抽屉，抽屉体内边距为 0，改由侧边栏自己处理宽度与安全区 */
+.ant-drawer-body .sidebar {
+  width: 100%;
+  border-right: none;
+  padding-left: calc(12px + env(safe-area-inset-left));
+  padding-top: calc(14px + env(safe-area-inset-top));
+  padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }

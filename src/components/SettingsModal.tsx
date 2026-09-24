@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Modal, Input, Button, Spin, App as AntApp } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import { getSettings, saveSettings } from '../api';
+import './SettingsModal.css';
 
 interface Props {
   open: boolean;
@@ -57,6 +58,8 @@ export default function SettingsModal({ open, onClose }: Props) {
       open={open}
       onCancel={onClose}
       width={640}
+      centered
+      style={{ maxWidth: 'calc(100vw - 24px)' }}
       footer={[
         <Button key="reset" icon={<ReloadOutlined />} onClick={reset} style={{ float: 'left' }}>
           恢复默认
@@ -69,7 +72,7 @@ export default function SettingsModal({ open, onClose }: Props) {
         </Button>,
       ]}
     >
-      <p style={{ color: '#8b95a1', fontSize: 13, marginTop: 0 }}>
+      <p className="settings-hint">
         每次对话都会把这段提示词作为系统消息发给模型，对所有会话生效。
       </p>
       {loading ? (
